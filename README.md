@@ -1,4 +1,4 @@
-# TeamSpeak-AU
+# TeamSpeak Auto Update
 TeamSpeak-AutoUpdate
 
 Prerequisites of this ShellScript:
