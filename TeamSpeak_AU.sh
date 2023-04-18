@@ -1,30 +1,35 @@
 #!/bin/sh
-# Author: David Kollarcik C 2020
+# Author: David Kollarcik C 2023
 
 ### Variables ###
-set -x
+TMP_FOLDER=/tmp/teamspeak
 LATEST=`curl https://www.teamspeak.com/en/downloads/#server 2>/dev/null |grep -Eo "(http|https)://[a-zA-Z0-9./?=_-]*" | grep teamspeak3-server_linux_amd64 | sort -u`
 TSDIRECTORY="teamspeak3-server_linux_amd64"
 VERSION=`curl https://www.teamspeak.com/en/downloads/#server 2>/dev/null |grep -Eo "(http|https)://[a-zA-Z0-9./?=_-]*" | grep teamspeak3-server_linux_amd64 | sort -u | cut -d "/" -f 7`
 
-### Functions ### 
+### Functions ###
+
+CreateFolder () {
+  echo "Create folder if no exist"
+    mkdir -p ${TMP_FOLDER}
+}
 
 DownloadNew () {
     echo "Start downloading TeamSpeak Files"
-        wget $LATEST -P /tmp/teamspeak/
+        wget ${LATEST} -P ${TMP_FOLDER}/
 }
 
 PrepareFiles () {
     echo "Start Preparing Files"
-        tar -xjf /tmp/teamspeak/$VERSION -C /tmp/teamspeak/
+        tar -xjf ${TMP_FOLDER}/${VERSION} -C ${TMP_FOLDER}/
 }
 
 DeployFiles () {
     echo "Checking differencies for TeamSpeak version"
-        diff /tmp/teamspeak/$TSDIRECTORY/ts3server /opt/teamspeak3-server/ts3server
+        diff ${TMP_FOLDER}/${TSDIRECTORY}/ts3server /opt/teamspeak3-server/ts3server
             if [ $? = 2 ]
-                then mv /tmp/teamspeak/$TSDIRECTORY/* /opt/teamspeak3-server/
-                     cp -r /tmp/teamspeak/$TSDIRECTORY/* /opt/teamspeak3-server/
+                then mv ${TMP_FOLDER}/$TSDIRECTORY/* /opt/teamspeak3-server/
+                     cp -r ${TMP_FOLDER}/$TSDIRECTORY/* /opt/teamspeak3-server/
                 echo "Copying new version to /opt/teamspeak3-server/" 
             else
                 echo "Your version is newest on the world"
@@ -42,8 +47,14 @@ ReturnCode () {
     fi
 }
 
-### Main ###
+RemoveTempFolder () {
+    echo "Removing Temp folder"
+    rm -Rf ${TMP_FOLDER}
+}
 
+### Main ###
+# Create folder if no Exist
+CreateFolder
 # Download New Version of TeamSpeak Files
 DownloadNew
 # Prepare Files from bz2 to Copy
@@ -54,3 +65,5 @@ DeployFiles
 systemctl restart teamspeak.service
 # Return Code from Restart
 ReturnCode
+# Remove Folder after success installation
+RemoveTempFolder
