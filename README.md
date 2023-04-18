@@ -2,6 +2,8 @@
 TeamSpeak-AutoUpdate
 
 Prerequisites of this ShellScript:
-	1. Is actually installed TeamSpeak server
-	2. Created folder in /tmp/ --> /tmp/teamspeak/
-	3. Before Update please backup all files of your server (For Sure)
+	1. Is currently installed TeamSpeak server
+	2. Before Update please backup all files of your server (For Sure) 
+	
+# Future Releases
+Auto Backup of Currently installation
